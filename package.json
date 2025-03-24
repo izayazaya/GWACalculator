@@ -5,7 +5,9 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "build": "node render.js",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
     "tesseract.js": "^6.0.0"
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "nodemon": "^3.1.9"
   }
 }
