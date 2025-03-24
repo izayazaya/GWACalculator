@@ -86,6 +86,10 @@ ul {
   transition: background-color 0.2s ease-in-out;
 }
 
+#university ul {
+  padding: 0px;
+}
+
 #university li:hover {
   background-color: #ffbc90;
 }
@@ -103,7 +107,6 @@ ul {
   display: flex;
   flex-wrap: wrap;
   text-align: center;
-  gap: 10px;
 }
 
 h2 {
