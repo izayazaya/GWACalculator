@@ -1,0 +1,30 @@
+{
+  "name": "gwacalculator",
+  "version": "1.0.0",
+  "description": "A GWA (General Weighted Average) Calculator for Bicol University students. The website uses Optical Character Recognition and a database of units for all courses. This website currently only works for Bicol University students as the database comes from the units of each course catered to Bicol University.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/izayazaya/GWACalculator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/izayazaya/GWACalculator/issues"
+  },
+  "homepage": "https://github.com/izayazaya/GWACalculator#readme",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.2",
+    "tesseract.js": "^6.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
