@@ -6,7 +6,7 @@ import fs from "fs";
 import { createWorker } from "tesseract.js";
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,12 +14,20 @@ const __dirname = path.dirname(__filename);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("public"));
+
+app.use((req, res, next) => {
+  res.locals.baseUrl = "";
+  next();
+});
+
 app.get("/", (req, res) => {
   res.render("index", { title: "GWA Calculator" });
 });
+
 app.get("/view-ejs", (req, res) => {
   res.render("view-ejs", { title: "Bicol University" });
 });
+
 app.get("/about", (req, res) => {
   res.render("about");
 });
