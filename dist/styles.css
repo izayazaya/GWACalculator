@@ -129,6 +129,16 @@ h2 {
   display: block;
 }
 
+.university-title {
+  text-align: center;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 footer {
   background-color: #081426;
   padding: 20px;

@@ -7,14 +7,14 @@
     <meta name="author" content="Izayaa" />
     <link rel="icon" href="<%= baseUrl %>/favicon.ico" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="<%= baseUrl %>/styles2.css" />
+    <link rel="stylesheet" href="<%= baseUrl %>/styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet" />
     <script src="<%= baseUrl %>/app.js" defer></script>
   </head>
   <body>
     <%- include("partials/header") %>
     <main>
-      <h1>Bicol University</h1>
+      <h1 class="university-title">Bicol University</h1>
       <div class="main">
         <form action="<%= baseUrl %>/grade" method="POST" enctype="multipart/form-data">
           <input type="file" name="file" required />
