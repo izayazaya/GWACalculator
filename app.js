@@ -37,34 +37,40 @@ app.use(express.json());
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "grades/");
+    const tempPath = "/tmp/uploads";
+    if (!fs.existsSync(tempPath)) {
+      fs.mkdirSync(tempPath, { recursive: true });
+    }
+    cb(null, tempPath);
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
   },
 });
 
+const gradesDir = path.join(__dirname, "grades");
+
+if (!fs.existsSync(gradesDir)) {
+  fs.mkdirSync(gradesDir, { recursive: true });
+}
+
 const upload = multer({ storage: storage });
 
 const processImage = async (filePath) => {
-  const worker = await createWorker("eng");
-
   try {
-    console.log("Starting OCR processing...");
+    const worker = await createWorker("eng");
 
+    console.log("Starting OCR processing on:", filePath);
     const {
       data: { text },
     } = await worker.recognize(filePath);
 
     console.log("OCR processing complete.");
-    console.log("Extracted text:", text);
-
     await worker.terminate();
-    console.log("Tesseract worker terminated.");
 
     return text;
   } catch (error) {
-    console.error("Error processing image:", error);
+    console.error("OCR Processing Error:", error);
     return "Error processing image";
   }
 };
@@ -74,19 +80,19 @@ app.post("/grade", upload.single("file"), async (req, res) => {
     return res.status(400).send("No file uploaded.");
   }
 
-  const filePath = path.join(__dirname, "grades", req.file.originalname);
+  const filePath = req.file.path;
 
-  fs.access(filePath, fs.constants.F_OK, async (err) => {
-    if (err) {
-      console.error("Error: File not found");
-      return res.status(500).send("Error: File not found");
-    }
+  console.log("File uploaded to:", filePath);
 
-    console.log("File found, processing with OCR...");
-    const extractedText = await processImage(filePath);
+  if (!fs.existsSync(filePath)) {
+    console.error("Error: File not found", filePath);
+    return res.status(500).send("Error: File not found");
+  }
 
-    res.send(`Extracted Text: <pre>${extractedText}</pre>`);
-  });
+  console.log("File found, processing with OCR...");
+  const extractedText = await processImage(filePath);
+
+  res.send(`Extracted Text: <pre>${extractedText}</pre>`);
 });
 
 app.listen(PORT, () => {
