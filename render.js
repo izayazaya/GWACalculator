@@ -34,12 +34,14 @@ if (fs.existsSync(publicDir)) {
   copyRecursiveSync(publicDir, distDir);
 }
 
+const baseUrl = "/GWACalculator";
+
 fs.readdirSync(viewsDir).forEach((file) => {
   if (file.endsWith(".ejs")) {
     const filePath = path.join(viewsDir, file);
     const outputFilePath = path.join(distDir, file.replace(".ejs", ".html"));
 
-    ejs.renderFile(filePath, { title: "My Website" }, (err, str) => {
+    ejs.renderFile(filePath, { baseUrl, title: "GWA Calculator" }, (err, str) => {
       if (err) {
         console.error(`Error rendering ${file}:`, err);
         return;
