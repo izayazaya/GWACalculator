@@ -11,16 +11,10 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const baseUrl = "/GWACalculator";
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static("public"));
-
-app.use((req, res, next) => {
-  res.locals.baseUrl = "";
-  next();
-});
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
   res.render("index", { title: "GWA Calculator" });
@@ -49,12 +43,6 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-
-const gradesDir = path.join(__dirname, "grades");
-
-if (!fs.existsSync(gradesDir)) {
-  fs.mkdirSync(gradesDir, { recursive: true });
-}
 
 const upload = multer({ storage: storage });
 

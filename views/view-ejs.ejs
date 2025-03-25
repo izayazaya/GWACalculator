@@ -7,19 +7,24 @@
     <meta name="author" content="Izayaa" />
     <link rel="icon" href="/favicon.ico" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="<%= baseUrl %>/styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet" />
-    <script src="<%= baseUrl %>/app.js" defer></script>
+    <script src="/app.js" defer></script>
   </head>
   <body>
     <%- include("partials/header") %>
     <main>
       <h1 class="university-title">Bicol University</h1>
       <div class="main">
-        <form action="<%= baseUrl %>/grade" method="POST" enctype="multipart/form-data">
-          <input type="file" name="file" required />
-          <button type="submit">Check GWA</button>
-        </form>
+        <div class="upload-container">
+          <form action="/grade" method="POST" enctype="multipart/form-data">
+            <label class="file-upload-button" id="file-label" for="file-upload"><span>Upload File</span></label>
+            <input id="file-upload" tabindex="-1" type="file" name="file" accept="image/*" required />
+            <span id="file-name" class="hidden"></span>
+            <button type="submit">View GWA</button>
+          </form>
+          <script src="/script.js" defer></script>
+        </div>
       </div>
     </main>
     <%- include("partials/footer") %>
