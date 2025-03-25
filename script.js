@@ -26,10 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Submit event triggered");
 
     if (!fileInput.files.length) {
-      console.log("No file selected");
+      console.log("No file selected!");
       event.preventDefault();
       alert("Please upload a file before submitting!");
-      fileInput.reportValidity();
+      fileInput.focus();
+      return false;
     }
   });
 });

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet" />
     <script src="/app.js" defer></script>
+    <script src="/script.js" defer></script>
   </head>
   <body>
     <%- include("partials/header") %>
@@ -19,11 +20,10 @@
         <div class="upload-container">
           <form action="/grade" method="POST" enctype="multipart/form-data">
             <label class="file-upload-button" id="file-label" for="file-upload"><span>Upload File</span></label>
-            <input id="file-upload" tabindex="-1" type="file" name="file" accept="image/*" required />
+            <input id="file-upload" tabindex="-1" type="file" name="file" accept="image/*" />
             <span id="file-name" class="hidden"></span>
             <button type="submit">View GWA</button>
           </form>
-          <script src="/script.js" defer></script>
         </div>
       </div>
     </main>
