@@ -33,4 +33,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
   });
+
+  document.getElementById("file-label").addEventListener("keydown", function (event) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault(); // Prevent page scroll on Space
+      document.getElementById("file-upload").click();
+    }
+  });
 });
