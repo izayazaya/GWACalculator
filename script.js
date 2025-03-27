@@ -5,11 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let fileName = document.getElementById("file-name");
   let form = document.querySelector("form");
 
-  if (!fileInput || !fileLabel || !fileLabelSpan || !fileName || !form) {
-    console.error("One or more elements are missing!");
-    return;
-  }
-
   fileLabelSpan.textContent = fileName.textContent || "Upload File";
 
   fileInput.addEventListener("change", function () {
@@ -19,6 +14,16 @@ document.addEventListener("DOMContentLoaded", function () {
       let fileNameText = this.files[0].name;
       fileLabelSpan.textContent = fileNameText;
       fileLabel.title = fileNameText;
+    }
+
+    let fileNameText = this.files[0].name;
+    var idxDot = fileNameText.lastIndexOf(".") + 1;
+    var extFile = fileNameText.substr(idxDot, fileNameText.length).toLowerCase();
+    if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
+    } else {
+      alert("Only jpg/jpeg and png files are allowed!");
+      fileInput.value = "";
+      fileLabelSpan.textContent = fileName.textContent || "Upload File";
     }
   });
 
@@ -36,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById("file-label").addEventListener("keydown", function (event) {
     if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault(); // Prevent page scroll on Space
+      event.preventDefault();
       document.getElementById("file-upload").click();
     }
   });
