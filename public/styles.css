@@ -16,6 +16,11 @@ body {
   padding: 0px;
 }
 
+body.dragging {
+  background: #f17754;
+  transition: background 0.2s ease-in-out;
+}
+
 header {
   padding-left: 8%;
   padding-right: 8%;
@@ -32,7 +37,8 @@ a {
 }
 
 a:visited,
-a:link {
+a:link,
+#title:hover {
   color: #ffe4bc;
 }
 
@@ -44,10 +50,6 @@ li a:hover {
   font-size: 30px;
   padding: 0px;
   margin: 0px;
-}
-
-#title:hover {
-  color: #ffe4bc;
 }
 
 .logo {
@@ -75,7 +77,7 @@ ul a {
 }
 
 main {
-  height: 70vh;
+  min-height: 70vh;
 }
 
 .hero {
@@ -212,8 +214,43 @@ button:hover {
   transition: background-color 0.2s ease-in-out;
 }
 
+#output {
+  margin: auto;
+}
+
+#progress-container {
+  width: 20%;
+  background: #ffe4bc;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+  margin: 10px auto;
+  height: 15px;
+}
+
+#status {
+  text-align: center;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #f17754;
+  transition: width 0.2s;
+}
+
+#ocr-output {
+  color: #081426;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #ffe4bc;
+  padding: 10px;
+  margin: 20px auto;
+  width: 50%;
+  min-height: 100px;
+}
+
 footer {
-  background-color: #081426;
   padding: 20px;
   text-align: center;
 }
@@ -226,7 +263,7 @@ footer {
 .social-links img {
   width: 30px;
   height: 30px;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.2s ease-in-out;
 }
 
 .social-links img:hover {

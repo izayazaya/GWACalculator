@@ -2,47 +2,125 @@ document.addEventListener("DOMContentLoaded", function () {
   let fileInput = document.getElementById("file-upload");
   let fileLabel = document.getElementById("file-label");
   let fileLabelSpan = fileLabel.querySelector("span");
-  let fileName = document.getElementById("file-name");
-  let form = document.querySelector("form");
+  let progressBar = document.getElementById("progress-bar");
+  let statusText = document.getElementById("status");
+  let startOCRButton = document.getElementById("startOCR");
+  let ocrOutput = document.querySelector("#ocr-output pre");
 
-  fileLabelSpan.textContent = fileName.textContent || "Upload File";
+  let storedFileName = sessionStorage.getItem("uploadedFileName") || "";
+  fileLabelSpan.textContent = storedFileName || "Upload File";
 
   fileInput.addEventListener("change", function () {
-    console.log("File input changed");
+    handleFileSelection(this.files);
+  });
 
-    if (this.files.length > 0) {
-      let fileNameText = this.files[0].name;
-      fileLabelSpan.textContent = fileNameText;
-      fileLabel.title = fileNameText;
+  startOCRButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    if (fileInput.files.length === 0) {
+      alert("Please upload an image first.");
+      return;
     }
 
-    let fileNameText = this.files[0].name;
-    var idxDot = fileNameText.lastIndexOf(".") + 1;
-    var extFile = fileNameText.substr(idxDot, fileNameText.length).toLowerCase();
-    if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
-    } else {
-      alert("Only jpg/jpeg and png files are allowed!");
-      fileInput.value = "";
-      fileLabelSpan.textContent = fileName.textContent || "Upload File";
+    let formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    statusText.textContent = "Uploading...";
+    progressBar.style.width = "0%";
+
+    fetch("/grade", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.id) {
+          trackProgress(data.id);
+        } else {
+          statusText.textContent = "Error: Invalid server response";
+        }
+      })
+      .catch(() => {
+        statusText.textContent = "Error: Invalid server response";
+      });
+  });
+
+  function trackProgress(id) {
+    statusText.textContent = "Processing...";
+    let interval = setInterval(async function () {
+      try {
+        let response = await fetch(`/progress/${id}`);
+        if (!response.ok) throw new Error("Server error");
+        let data = await response.json();
+
+        progressBar.style.width = data.progress + "%";
+
+        if (data.progress >= 100) {
+          clearInterval(interval);
+          ocrOutput.textContent = data.text;
+          statusText.textContent = "OCR Complete!";
+
+          fileInput.value = "";
+          sessionStorage.removeItem("uploadedFileName");
+          fileLabelSpan.textContent = "Upload File";
+        } else if (data.progress === -1) {
+          clearInterval(interval);
+          statusText.textContent = "Error during OCR";
+        }
+      } catch (error) {
+        console.error("Progress tracking error:", error);
+        clearInterval(interval);
+        statusText.textContent = "Error tracking progress";
+      }
+    }, 1000);
+  }
+
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    document.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+
+  document.addEventListener("dragover", () => {
+    document.body.classList.add("dragging");
+  });
+
+  document.addEventListener("dragleave", (e) => {
+    if (e.clientY === 0) {
+      document.body.classList.remove("dragging");
     }
   });
 
-  form.addEventListener("submit", function (event) {
-    console.log("Submit event triggered");
+  document.addEventListener("drop", (e) => {
+    document.body.classList.remove("dragging");
+    handleFileSelection(e.dataTransfer.files);
+  });
 
+  function handleFileSelection(files) {
+    if (files.length > 0) {
+      let file = files[0];
+      let ext = file.name.split(".").pop().toLowerCase();
+      if (["jpg", "jpeg", "png"].includes(ext)) {
+        fileInput.files = files;
+        fileLabelSpan.textContent = file.name;
+        sessionStorage.setItem("uploadedFileName", file.name);
+      } else {
+        alert("Only JPG, JPEG, and PNG files are allowed!");
+      }
+    }
+  }
+
+  window.addEventListener("pageshow", function () {
     if (!fileInput.files.length) {
-      console.log("No file selected!");
-      event.preventDefault();
-      alert("Please upload a file before submitting!");
-      fileInput.focus();
-      return false;
+      sessionStorage.removeItem("uploadedFileName");
+      fileLabelSpan.textContent = "Upload File";
     }
   });
 
-  document.getElementById("file-label").addEventListener("keydown", function (event) {
+  fileLabel.addEventListener("keydown", function (event) {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      document.getElementById("file-upload").click();
+      fileInput.click();
     }
   });
 });

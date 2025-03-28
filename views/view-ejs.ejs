@@ -7,9 +7,9 @@
     <meta name="author" content="Izayaa" />
     <link rel="icon" href="/favicon.ico" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet" />
-    <script src="/app.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
     <script src="/script.js" defer></script>
   </head>
   <body>
@@ -22,8 +22,17 @@
             <label class="file-upload-button" id="file-label" for="file-upload" tabindex="0"><span>Upload File</span></label>
             <input id="file-upload" tabindex="-1" type="file" name="file" accept=".png, .jpg, .jpeg" />
             <span id="file-name" class="hidden"></span>
-            <button type="submit">View GWA</button>
+            <button id="startOCR" type="submit">View GWA</button>
           </form>
+          <div id="output">
+            <div id="progress-container">
+              <div id="progress-bar"></div>
+            </div>
+            <p id="status">Waiting for OCR...</p>
+            <div id="ocr-output">
+              <pre id="ocr-result">No text extracted yet.</pre>
+            </div>
+          </div>
         </div>
       </div>
     </main>

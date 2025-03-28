@@ -24,10 +24,6 @@ app.get("/view-ejs", (req, res) => {
   res.render("view-ejs", { title: "Bicol University" });
 });
 
-app.get("/about", (req, res) => {
-  res.render("about");
-});
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -40,51 +36,70 @@ const storage = multer.diskStorage({
     cb(null, tempPath);
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    const safeName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_");
+    cb(null, safeName);
   },
 });
-
 const upload = multer({ storage: storage });
 
-const processImage = async (filePath) => {
-  try {
-    const worker = await createWorker("eng");
+let worker;
+const progressMap = {};
 
-    console.log("Starting OCR processing on:", filePath);
+const initWorker = async () => {
+  worker = await createWorker("eng");
+
+  await worker.setParameters({ tessedit_pageseg_mode: 3 });
+
+  console.log("Tesseract worker initialized.");
+};
+
+initWorker();
+
+const processImage = async (filePath, id) => {
+  if (!worker) {
+    progressMap[id] = { progress: -1, text: "Worker not ready" };
+    return;
+  }
+
+  try {
+    progressMap[id] = { progress: 0, text: "" };
+
+    const recognizePromise = worker.recognize(filePath, "eng");
+
+    const progressCheck = setInterval(async () => {
+      if (progressMap[id].progress >= 100 || progressMap[id].progress === -1) {
+        clearInterval(progressCheck);
+      }
+    }, 500);
+
     const {
       data: { text },
-    } = await worker.recognize(filePath);
+    } = await recognizePromise;
 
-    console.log("OCR processing complete.");
-    await worker.terminate();
-
-    return text;
+    progressMap[id] = { progress: 100, text };
   } catch (error) {
-    console.error("OCR Processing Error:", error);
-    return "Error processing image";
+    console.error("Error processing image:", error);
+    progressMap[id] = { progress: -1, text: "Error processing image" };
   }
 };
 
-app.post("/grade", upload.single("file"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).send("No file uploaded.");
-  }
+app.post("/grade", upload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded." });
 
-  const filePath = req.file.path;
+  const id = Date.now().toString();
+  progressMap[id] = { progress: 0, text: "" };
 
-  console.log("File uploaded to:", filePath);
+  processImage(req.file.path, id);
 
-  if (!fs.existsSync(filePath)) {
-    console.error("Error: File not found", filePath);
-    return res.status(500).send("Error: File not found");
-  }
-
-  console.log("File found, processing with OCR...");
-  const extractedText = await processImage(filePath);
-
-  res.send(`Extracted Text: <pre>${extractedText}</pre>`);
+  res.json({ id });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.get("/progress/:id", (req, res) => {
+  const progressData = progressMap[req.params.id];
+  if (!progressData) {
+    return res.json({ progress: -1, text: "Processing not started" });
+  }
+  res.json(progressData);
 });
+
+app.listen(PORT, "0.0.0.0", () => console.log(`Server running on http://localhost:${PORT}`));
