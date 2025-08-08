@@ -24,7 +24,7 @@
     const imageInput = document.getElementById('imageInput');
     const output = document.getElementById('output');
 
-    // ✅ Your 7 known subject codes
+    // Subject codes here
     const knownCodes = [
       'CS103',
       'CS107',
@@ -35,14 +35,14 @@
       'PATHFIT2'
     ];
 
+    // cleans characters e.g., "CS 107" → "CS107"
     function clean(line) {
-      return line.replace(/[^A-Za-z0-9]/g, '').toUpperCase(); // e.g., "CS 107" → "CS107"
+      return line.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     }
 
     function isGrade(line) {
       const cleaned = line.replace(/[^0-9.]/g, '');
 
-      // Normalize grades
       if (/^[0-5](\.|:)?[05]$/.test(line)) {
         return cleaned.replace(':', '.');
       } else if (/^[0-5]0$/.test(cleaned)) {
@@ -99,3 +99,4 @@
   </script>
 </body>
 </html>
+
